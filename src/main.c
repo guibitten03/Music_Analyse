@@ -2,15 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* A : 00000001
- * B : 00000010
- * C : 00000100
- * D : 00001000
- * E : 00010000
- * F : 00100000
- * # : 01000000
- * b : 10000000
- * */
+#include "note.h"
 
 struct args_t {
 	char * filePath;
@@ -49,7 +41,7 @@ int main(int argc, char ** argv) {
 			int lineSz = fileGetNextLineSize(inputFile);
 
 			char lineBuffer[lineSz + 1];
-			fgets(lineBuffer, sizeof(lineBuffer)/sizeof(lineBuffer[0]), inputFile);
+			fgets(lineBuffer, sizeof(lineBuffer) / sizeof(lineBuffer[0]), inputFile);
 
 			printf("Original notes:\n");
 			char * note = strtok(lineBuffer, " \n");
@@ -63,7 +55,7 @@ int main(int argc, char ** argv) {
 			lineSz = fileGetNextLineSize(inputFile);
 
 			char suspectBuffer[lineSz + 1];
-			fgets(suspectBuffer, sizeof(suspectBuffer)/sizeof(suspectBuffer[0]), inputFile);
+			fgets(suspectBuffer, sizeof(suspectBuffer) / sizeof(suspectBuffer[0]), inputFile);
 
 			printf("Suspect notes:\n");
 			note = strtok(suspectBuffer, " \n");

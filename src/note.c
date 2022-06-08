@@ -1,56 +1,106 @@
-#include <stdio.h>
+#include "note.h"
+
 #include <stdlib.h>
-#include <stdint.h>
+#include <stdio.h>
 
-#define C 0b0000100000000000
-#define D 0b0000001000000000
-#define E 0b0000000010000000
-#define F 0b0000000001000000
-#define G 0b0000000000010000
-#define A 0b0000000000000100
-#define B 0b0000000000000001
+const note C = 0b0000100000000000;
+const note D = 0b0000001000000000;
+const note E = 0b0000000010000000;
+const note F = 0b0000000001000000;
+const note G = 0b0000000000010000;
+const note A = 0b0000000000000100;
+const note B = 0b0000000000000001;
 
-#define SHARP(X) (rightShiftC(X))
-#define FLAT(X) (leftShiftC(X))
+static note getNoteFromChar(char c);
+static note applyModifier(note n, char modifier);
 
-typedef uint16_t note;
+static short checkRight(note a, note b);
+static short checkLeft(note a, note b);
+static note rightShiftLimited(note n);
+static note leftShiftLimited(note n);
+static note rightShiftC(note n);
+static note leftShiftC(note n);
+static short isPowerOf2(int n);
 
-short isSimilar(note a, note b);
-short checkRight(note a, note b);
-short checkLeft(note a, note b);
-note rightShiftLimited(note n);
-note leftShiftLimited(note n);
-note rightShiftC(note n);
-note leftShiftC(note n);
-short isPowerOf2(int n);
-void printBits(note num);
+note nt_New(const char * strNote, int sz) {
+	if (sz <= 0) {
+		fprintf(stderr, "ERROR: sz <= 0.\n");
+		exit(EXIT_FAILURE);
+	}
 
-int main_Example(int argc, char ** argv) {
-    note a = FLAT(C);
-    note b = SHARP(D); // FLAT(A);
+	if (sz > 2) {
+		fprintf(stderr, "ERROR: sz > 2.\n");
+		exit(EXIT_FAILURE);
+	}
 
-    printBits(a);
-    printBits(b);
+	note result = 0;
 
-    if (isSimilar(a, b)) {
-        printf("They are similars.\n");
-    } else {
-        printf("They are NOT similars.\n");
-    }
+	for (int i = 0; i < sz; i++) {
+		char c = strNote[i];
+		switch (i) {
+			case 0:
+				result = getNoteFromChar(c);				
+			break;
 
-    if (a == b) {
-        printf("They are equals.\n");
-    } else {
-        printf("They are NOT equals.\n");
-    }
+			case 1:
+				result = applyModifier(result, c);
+			break;
+		}
+	}
 
-    return 0;
+	return result;
 }
 
-short isSimilar(note a, note b) {
+static note getNoteFromChar(char c) {
+	switch (c) {
+		case 'C': return C;
+
+		case 'D': return D;
+
+		case 'E': return E;
+
+		case 'F': return F;
+
+		case 'G': return G;
+
+		case 'A': return A;
+
+		case 'B': return B;
+		
+		default:
+			fprintf(stderr, "Unknown note: %c\n", c);
+			exit(EXIT_FAILURE);
+	};
+}
+
+static note applyModifier(note n, char modifier) {
+	switch (modifier) {
+		case '#': return nt_Sharp(n);
+
+		case 'b': return nt_Flat(n);
+
+		default:
+			fprintf(stderr, "Unknown modifier: %c\n", modifier);
+			exit(EXIT_FAILURE);
+	};
+}
+
+note nt_Sharp(note n) {
+	return rightShiftC(n);
+}
+
+note nt_Flat(note n) {
+	return leftShiftC(n);
+}
+
+short nt_areSimilars(note a, note b) {
     short rightResult = checkRight(a, b);
     short leftResult = checkLeft(a, b);
     return rightResult || leftResult;
+}
+
+short nt_areEquals(note a, note b) {
+	return a == b;
 }
 
 short checkRight(note a, note b) {
@@ -120,16 +170,4 @@ note leftShiftC(note n) {
 
 short isPowerOf2(int n) {
     return (n != 0) && ((n & (n - 1)) == 0);
-}
-
-void printBits(note num) {
-    unsigned int size = sizeof(note);
-    unsigned int maxPow = 1 << (size * 8 - 1);
-    for(int i = 0; i < size; ++i) {
-        for(int j = 0; j < 8; ++j) {
-            printf("%u ", num & maxPow ? 1 : 0);
-            num = num << 1;
-        }
-    }
-    printf("\n");
 }
