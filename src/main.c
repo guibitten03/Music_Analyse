@@ -4,6 +4,8 @@
 
 #include "note.h"
 
+void BruteForce(note * original, int n, note * suspect, int m);
+
 struct args_t {
 	char * filePath;
 	long method;
@@ -33,7 +35,7 @@ int main(int argc, char ** argv) {
 	do {
 		int M, T;
 		fscanf(inputFile, "%d %d\n", &M, &T);
-		fprintf(stdout, "%d %d\n", M, T);
+		//fprintf(stdout, "%d %d\n", M, T);
 
 		bHasInput = (M != 0) && (T != 0);	
 
@@ -43,12 +45,14 @@ int main(int argc, char ** argv) {
 			char lineBuffer[lineSz + 1];
 			fgets(lineBuffer, sizeof(lineBuffer) / sizeof(lineBuffer[0]), inputFile);
 
-			printf("Original notes:\n");
-			char * note = strtok(lineBuffer, " \n");
+			note original[M];
+
+			int i = 0;
+			char * noteStr = strtok(lineBuffer, " \n");
 			do {
-				printf("%s ", note);
-			} while ((note = strtok(NULL, " \n")) != NULL);
-			printf("\n");
+				original[i] = nt_New(noteStr, strlen(noteStr));
+				i++;
+			} while ((noteStr = strtok(NULL, " \n")) != NULL);
 
 			/* ------------------------------------------------------- */
 
@@ -57,18 +61,39 @@ int main(int argc, char ** argv) {
 			char suspectBuffer[lineSz + 1];
 			fgets(suspectBuffer, sizeof(suspectBuffer) / sizeof(suspectBuffer[0]), inputFile);
 
-			printf("Suspect notes:\n");
-			note = strtok(suspectBuffer, " \n");
+			note suspect[T];
+
+			i = 0;
+			noteStr = strtok(suspectBuffer, " \n");
 			do {
-				printf("%s ", note);
-			} while ((note = strtok(NULL, " \n")) != NULL);
-			printf("\n");
+				suspect[i] = nt_New(noteStr, strlen(noteStr));
+				i++;
+			} while ((noteStr = strtok(NULL, " \n")) != NULL);
+
+			BruteForce(original, M, suspect, T);
 		}
 	} while (bHasInput);
 
 	fclose(inputFile);
 
 	return EXIT_SUCCESS;
+}
+
+void BruteForce(note * original, int n, note * suspect, int m) {
+	for (int i = 0; i < n - m + 1; i++) {
+		int k = i;
+		int j = 0;
+
+		short lastDistance = -1;
+		while (nt_areSimilars(original[k], suspect[j], &lastDistance)) {
+			k++; j++;
+			if (j == m) {
+				printf("S %d\n", i);
+				return;	
+			}
+		}
+	}
+	printf("N\n");
 }
 
 int fileGetNextLineSize(FILE * f) {

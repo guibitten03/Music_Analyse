@@ -17,6 +17,5 @@
 	note nt_Sharp(note n);
 	note nt_Flat(note n);
 
-	short nt_areSimilars(note a, note b);
-	short nt_areEquals(note a, note b);
+	short nt_areSimilars(note a, note b, short * InOutDistance);
 #endif
