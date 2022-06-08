@@ -25,7 +25,7 @@ note leftShiftC(note n);
 short isPowerOf2(int n);
 void printBits(note num);
 
-int main(int argc, char ** argv) {
+int main_Example(int argc, char ** argv) {
     note a = FLAT(C);
     note b = SHARP(D); // FLAT(A);
 
