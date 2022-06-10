@@ -3,8 +3,7 @@
 #include <string.h>
 
 #include "note.h"
-
-void BruteForce(note * original, int n, note * suspect, int m);
+#include "algorithms.h"
 
 struct args_t {
 	char * filePath;
@@ -17,14 +16,15 @@ typedef struct args_t * Args;
 void argsShowUsage(char * programName);
 void argsParse(Args a, int argc, char ** argv);
 
-void parseNotes(char * line, note * notes);
 int fileGetNextLineSize(FILE * f);
+
+void parseNotes(char * line, note * notes);
+
+void callMethod(long method, note * original, int M, note * suspect, int T);
 
 int main(int argc, char ** argv) {
 	args arguments;
 	argsParse(&arguments, argc, argv);
-
-	printf("filePath: %s | method: %ld\n", arguments.filePath, arguments.method);
 
 	FILE * inputFile = fopen(arguments.filePath, "r");
 	if (NULL == inputFile) {
@@ -36,7 +36,6 @@ int main(int argc, char ** argv) {
 	do {
 		int M, T;
 		fscanf(inputFile, "%d %d\n", &M, &T);
-		//fprintf(stdout, "%d %d\n", M, T);
 
 		bHasInput = (M != 0) && (T != 0);	
 
@@ -50,8 +49,6 @@ int main(int argc, char ** argv) {
 
 			parseNotes(originalBuffer, original);
 
-			/* ------------------------------------------------------- */
-
 			lineSz = fileGetNextLineSize(inputFile);
 
 			char suspectBuffer[lineSz + 1];
@@ -61,53 +58,13 @@ int main(int argc, char ** argv) {
 
 			parseNotes(suspectBuffer, suspect);
 
-			BruteForce(original, M, suspect, T);
+			callMethod(arguments.method, original, M, suspect, T);
 		}
 	} while (bHasInput);
 
 	fclose(inputFile);
 
 	return EXIT_SUCCESS;
-}
-
-void BruteForce(note * original, int n, note * suspect, int m) {
-	for (int i = 0; i < n - m + 1; i++) {
-		int k = i;
-		int j = 0;
-
-		short lastDistance = -1;
-		while (nt_areSimilars(original[k], suspect[j], &lastDistance)) {
-			k++; j++;
-			if (j == m) {
-				printf("S %d\n", i);
-				return;	
-			}
-		}
-	}
-	printf("N\n");
-}
-
-void parseNotes(char * line, note * notes) {
-	int i = 0;
-	char * noteStr = strtok(line, " \n");
-	do {
-		notes[i] = nt_New(noteStr, strlen(noteStr));
-		i++;
-	} while ((noteStr = strtok(NULL, " \n")) != NULL);
-}
-
-int fileGetNextLineSize(FILE * f) {
-	long filePos = ftell(f);
-
-	char c = '\0';
-	int sz = 0;
-	while ((c = fgetc(f)) != EOF) {
-		sz++;
-		if (c == '\n') break;
-	}
-
-	fseek(f, filePos, SEEK_SET);
-	return sz;
 }
 
 void argsParse(Args a, int argc, char ** argv) {
@@ -127,4 +84,41 @@ void argsShowUsage(char * programName) {
 					"\t2 : KMP\n"
 					"\t3 : Boyer-Moore (BMH)\n"
 					"\t4 : ShiftAndExato\n");
+}
+
+int fileGetNextLineSize(FILE * f) {
+	long filePos = ftell(f);
+
+	char c = '\0';
+	int sz = 0;
+	while ((c = fgetc(f)) != EOF) {
+		sz++;
+		if (c == '\n') break;
+	}
+
+	fseek(f, filePos, SEEK_SET);
+	return sz;
+}
+
+void parseNotes(char * line, note * notes) {
+	int i = 0;
+	char * noteStr = strtok(line, " \n");
+	do {
+		notes[i] = nt_New(noteStr, strlen(noteStr));
+		i++;
+	} while ((noteStr = strtok(NULL, " \n")) != NULL);
+}
+
+void callMethod(long method, note * original, int M, note * suspect, int T) {
+	switch (method)
+	{
+	case 1:
+		bruteForce(original, M, suspect, T);
+		break;
+	
+	default:
+		fprintf(stderr, "Method doesn't exist or not implemented yet: %ld\n", method);
+		exit(EXIT_FAILURE);
+		break;
+	}
 }
