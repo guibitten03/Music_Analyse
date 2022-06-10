@@ -111,12 +111,12 @@ void parseNotes(char * noteSequence, note * notes) {
 void callMethod(long method, note * original, int M, note * suspect, int T) {
 	switch (method)
 	{
-	case 1:
-		bruteForce(original, M, suspect, T);
+		case 1:
+			bruteForce(original, M, suspect, T);
 		break;
-	
-	default:
-		fprintf(stderr, "Method doesn't exist or not implemented yet: %ld\n", method);
-		exit(EXIT_FAILURE);
+		
+		default:
+			fprintf(stderr, "Method doesn't exist or not implemented yet: %ld\n", method);
+			exit(EXIT_FAILURE);
 	}
 }

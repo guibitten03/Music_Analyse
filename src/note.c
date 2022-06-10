@@ -21,12 +21,12 @@ static short isPowerOf2(int n);
 
 note nt_New(const char * strNote, int sz) {
 	if (sz <= 0) {
-		fprintf(stderr, "ERROR: sz <= 0.\n");
+		fprintf(stderr, "ERROR: Trying to create a note with size less than or equal to 0.\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (sz > 2) {
-		fprintf(stderr, "ERROR: sz > 2.\n");
+		fprintf(stderr, "ERROR: Trying to create a note with size greater than 2.\n");
 		exit(EXIT_FAILURE);
 	}
 
