@@ -97,6 +97,7 @@ int fileGetNextLineSize(FILE * f) {
 	}
 
 	fseek(f, filePos, SEEK_SET);
+	
 	return sz;
 }
 
@@ -119,6 +120,5 @@ void callMethod(long method, note * original, int M, note * suspect, int T) {
 	default:
 		fprintf(stderr, "Method doesn't exist or not implemented yet: %ld\n", method);
 		exit(EXIT_FAILURE);
-		break;
 	}
 }
