@@ -17,6 +17,7 @@ typedef struct args_t * Args;
 void argsShowUsage(char * programName);
 void argsParse(Args a, int argc, char ** argv);
 
+void parseNotes(char * line, note * notes);
 int fileGetNextLineSize(FILE * f);
 
 int main(int argc, char ** argv) {
@@ -42,17 +43,12 @@ int main(int argc, char ** argv) {
 		if (bHasInput) {
 			int lineSz = fileGetNextLineSize(inputFile);
 
-			char lineBuffer[lineSz + 1];
-			fgets(lineBuffer, sizeof(lineBuffer) / sizeof(lineBuffer[0]), inputFile);
+			char originalBuffer[lineSz + 1];
+			fgets(originalBuffer, sizeof(originalBuffer) / sizeof(originalBuffer[0]), inputFile);
 
 			note original[M];
 
-			int i = 0;
-			char * noteStr = strtok(lineBuffer, " \n");
-			do {
-				original[i] = nt_New(noteStr, strlen(noteStr));
-				i++;
-			} while ((noteStr = strtok(NULL, " \n")) != NULL);
+			parseNotes(originalBuffer, original);
 
 			/* ------------------------------------------------------- */
 
@@ -63,12 +59,7 @@ int main(int argc, char ** argv) {
 
 			note suspect[T];
 
-			i = 0;
-			noteStr = strtok(suspectBuffer, " \n");
-			do {
-				suspect[i] = nt_New(noteStr, strlen(noteStr));
-				i++;
-			} while ((noteStr = strtok(NULL, " \n")) != NULL);
+			parseNotes(suspectBuffer, suspect);
 
 			BruteForce(original, M, suspect, T);
 		}
@@ -94,6 +85,15 @@ void BruteForce(note * original, int n, note * suspect, int m) {
 		}
 	}
 	printf("N\n");
+}
+
+void parseNotes(char * line, note * notes) {
+	int i = 0;
+	char * noteStr = strtok(line, " \n");
+	do {
+		notes[i] = nt_New(noteStr, strlen(noteStr));
+		i++;
+	} while ((noteStr = strtok(NULL, " \n")) != NULL);
 }
 
 int fileGetNextLineSize(FILE * f) {

@@ -2,7 +2,7 @@
 #define MUSIC_ANALYSE_NOTE_H
 	#include <stdint.h>
 
-	typedef uint16_t note;
+	typedef uint8_t note;
 
 	extern const note C;
 	extern const note D;
