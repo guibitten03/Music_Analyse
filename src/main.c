@@ -16,9 +16,10 @@ typedef struct args_t * Args;
 void argsShowUsage(char * programName);
 void argsParse(Args a, int argc, char ** argv);
 
-int fileGetNextLineSize(FILE * f);
+void fileGetNotes(FILE * f, note * outNotes);
+int fileGetLineSize(FILE * f);
 
-void parseNotes(char * line, note * notes);
+void parseNotes(char * noteSequence, note * notes);
 
 void callMethod(long method, note * original, int M, note * suspect, int T);
 
@@ -40,23 +41,11 @@ int main(int argc, char ** argv) {
 		bHasInput = (M != 0) && (T != 0);	
 
 		if (bHasInput) {
-			int lineSz = fileGetNextLineSize(inputFile);
-
-			char originalBuffer[lineSz + 1];
-			fgets(originalBuffer, sizeof(originalBuffer) / sizeof(originalBuffer[0]), inputFile);
-
 			note original[M];
-
-			parseNotes(originalBuffer, original);
-
-			lineSz = fileGetNextLineSize(inputFile);
-
-			char suspectBuffer[lineSz + 1];
-			fgets(suspectBuffer, sizeof(suspectBuffer) / sizeof(suspectBuffer[0]), inputFile);
+			fileGetNotes(inputFile, original);
 
 			note suspect[T];
-
-			parseNotes(suspectBuffer, suspect);
+			fileGetNotes(inputFile, suspect);
 
 			callMethod(arguments.method, original, M, suspect, T);
 		}
@@ -86,7 +75,16 @@ void argsShowUsage(char * programName) {
 					"\t4 : ShiftAndExato\n");
 }
 
-int fileGetNextLineSize(FILE * f) {
+void fileGetNotes(FILE * f, note * outNotes) {
+	int lineSz = fileGetLineSize(f);
+
+	char buffer[lineSz + 1];
+	fgets(buffer, sizeof(buffer) / sizeof(buffer[0]), f);
+
+	parseNotes(buffer, outNotes);
+}
+
+int fileGetLineSize(FILE * f) {
 	long filePos = ftell(f);
 
 	char c = '\0';
@@ -97,13 +95,13 @@ int fileGetNextLineSize(FILE * f) {
 	}
 
 	fseek(f, filePos, SEEK_SET);
-	
+
 	return sz;
 }
 
-void parseNotes(char * line, note * notes) {
+void parseNotes(char * noteSequence, note * notes) {
 	int i = 0;
-	char * noteStr = strtok(line, " \n");
+	char * noteStr = strtok(noteSequence, " \n");
 	do {
 		notes[i] = nt_New(noteStr, strlen(noteStr));
 		i++;
