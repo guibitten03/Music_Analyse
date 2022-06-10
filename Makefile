@@ -1,5 +1,5 @@
 CFLAGS := -Wall -Wextra -iquote ./include
-DEFS := -D NONE
+DEFS := -D TIMING
 NAME := tp3
 
 SRC_DIR := src
@@ -18,4 +18,4 @@ OBJ_DIR_CHECKING:
 	mkdir -p obj
 
 clean:
-	rm -f $(OBJ_DIR)/*.o ./$(NAME)
+	rm -f $(OBJ_DIR)/*.o ./$(NAME) *.out

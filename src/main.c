@@ -5,6 +5,11 @@
 #include "note.h"
 #include "algorithms.h"
 
+#ifdef TIMING
+#include "timing.h"
+FILE * timingstdout = NULL;
+#endif
+
 struct args_t {
 	char * filePath;
 	long method;
@@ -33,6 +38,22 @@ int main(int argc, char ** argv) {
 		return EXIT_FAILURE;
 	}
 
+#ifdef TIMING
+	const char * timingstdoutFileName = "timing.out";
+
+	timingstdout = fopen("timing.out", "w");
+	if (NULL == inputFile) {
+		fprintf(stderr, "Could not create timing file: %s\n", timingstdoutFileName);
+		fprintf(stderr, "Using stdout.\n");
+		timingstdout = stdout;
+	}
+
+	t_PrintHeader();
+
+	timing t;
+	t_Start(&t);
+#endif
+
 	short bHasInput = 1;
 	do {
 		int M, T;
@@ -50,6 +71,11 @@ int main(int argc, char ** argv) {
 			callMethod(arguments.method, original, M, suspect, T);
 		}
 	} while (bHasInput);
+
+#ifdef TIMING
+	t_Finalize(&t);
+	t_Print(&t, __func__, 0, 0);
+#endif
 
 	fclose(inputFile);
 
