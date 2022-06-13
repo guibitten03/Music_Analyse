@@ -4,6 +4,7 @@
 
 #include "note.h"
 #include "algorithms.h"
+#include "shiftand.h"
 
 #ifdef TIMING
 #include "timing.h"
@@ -140,7 +141,11 @@ void callMethod(long method, note * original, int M, note * suspect, int T) {
 		case 1:
 			bruteForce(original, M, suspect, T);
 		break;
-		
+
+		case 2:
+			shiftand(original, M, suspect, T);
+		break;		
+
 		default:
 			fprintf(stderr, "Method doesn't exist or not implemented yet: %ld\n", method);
 			exit(EXIT_FAILURE);
