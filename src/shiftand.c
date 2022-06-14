@@ -26,8 +26,10 @@ static note * sh_GetAlfebet(note * original, int M, int * current_size);
 static int sh_CompairElementsOnAlfabet(note * alfabet, int current_size, int nextOE);
 static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet, int alfabet_size);
 static void sh_DefineBitMask(mask_List, alfabet_size, suspect, T);
+static void sh_FindPatternSuspect(mask * mask_List, note * original, int alfabet_size, int M, int T);
 
 static void toBinary(int n, int len);
+static void printMasks(mask * mask_List, int M);
 
 static int sh_CompairElementsOnAlfabet(note * alfabet, int current_size, int nextOE) {
     for (int i = 0; i < current_size; i++) {
@@ -45,18 +47,10 @@ static note * sh_GetAlfebet(note * original, int M, int * current_size) {
         alfabet[i] = -1;
     }
 
-    alfabet[0] = original[0];
-    *(current_size) = *(current_size) + 1;
-
-    for (int i = 1; i < M; i++) {
-        int nextOriginalElement = original[i];
-        if ( sh_CompairElementsOnAlfabet(alfabet, *(current_size), nextOriginalElement) ) {
-            int indexOfNewElement = *(current_size);
-            *(current_size) = *(current_size) + 1;
-            alfabet[indexOfNewElement] = nextOriginalElement;
-        } else {
-            continue;
-        }
+    for (int i = 0; i < M; i++) {
+        note first_alfabet_note = original[i];
+        alfabet[first_alfabet_note] = first_alfabet_note;
+        *(current_size) = *(current_size) + 1;
     }
     
     return alfabet;
@@ -85,13 +79,23 @@ void sh_DefineBitMask(mask * mask_List, int alfabet_size, note * suspect, int T)
 
 void sh_FindPatternSuspect(mask * mask_List, note * original, int alfabet_size, int M, int T) {
     int result = 0, result_alt = 0;
+    short last_distance = -1, areSimilar;
     for (int i = 0; i < M; i++) {
-        int suspect_note = original[i];
-        printf("%d\n", suspect_note);
+        note suspect_note = original[i];
 
-        result = (result_alt >> 1) | 1 << (T - 1); 
-        result_alt = result & mask_List[i].bit_sequence;
+        result = (result >> 1) | 1 << (T - 1); 
+        result_alt = result & mask_List[suspect_note].bit_sequence;
+
+        if (result_alt != 0 && i != 0) {
+            areSimilar = nt_areSimilars(original[i-1], suspect_note, &last_distance);
+        }
+
+        if ((result_alt & (01)) != 0 && !areSimilar) {
+            printf("S %d\n", (i - T + 1));
+            return;
+        }
     }
+    printf("N\n");
 }
 
     //11 >> 1 = 01
@@ -108,8 +112,16 @@ void shiftand(note * original, int M, note * suspect, int T) {
     sh_DefineBitMask(mask_List, alfabet_size, suspect, T);
 
     sh_FindPatternSuspect(mask_List, original, alfabet_size, M, T);
+
+    //printMasks(mask_List, M);
+
 } 
 
+void printMasks(mask * mask_List, int M) {
+    for (int i = 0; i < M; i++) {
+        toBinary(mask_List[i].bit_sequence, 64);
+    }
+}
 
 void toBinary(int n, int len) {
     char* binary = (char*)malloc(sizeof(char) * len);
