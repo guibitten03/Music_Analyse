@@ -70,21 +70,46 @@ void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet, int alfabet_size
 }
 
 void sh_DefineBitMask(mask * mask_List, int alfabet_size, note * suspect, int T) {
-    int k = 1;
-    int current_Element;
-    
+    int current_element;
+
     for (int i = 0; i < T; i++) {
-        current_Element = suspect[i];
+        current_element = suspect[i];
 
         for (int j = 0; j < alfabet_size; j++) {
-            if (current_Element == mask_List[j].element) {
-                mask_List[j].bit_sequence = mask_List[j].bit_sequence | k;
-            }   
-            mask_List[j].last_bit = k;
-            k = k << 1;
+            if (current_element == mask_List[j].element) {
+                mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
+            }
         }
     }
 }
+
+void sh_FindPatternSuspect(mask * mask_List, note * original, int alfabet_size, int M, int T) {
+    int result = 0, result_alt = 0;
+    for (int i = 0; i < M; i++) {
+        int suspect_note = original[i];
+        printf("%d\n", suspect_note);
+
+        result = (result_alt >> 1) | 1 << (T - 1); 
+        result_alt = result & mask_List[i].bit_sequence;
+    }
+}
+
+    //11 >> 1 = 01
+    //11 << 1 = 110
+
+void shiftand(note * original, int M, note * suspect, int T) {
+    int alfabet_size = 0;
+    note * original_Alfabet = sh_GetAlfebet(original, M, &alfabet_size);
+
+    mask * mask_List = (mask *) malloc(sizeof(mask) * alfabet_size);
+
+    sh_DefineBitSequencesTo0(mask_List, original_Alfabet, alfabet_size);
+
+    sh_DefineBitMask(mask_List, alfabet_size, suspect, T);
+
+    sh_FindPatternSuspect(mask_List, original, alfabet_size, M, T);
+} 
+
 
 void toBinary(int n, int len) {
     char* binary = (char*)malloc(sizeof(char) * len);
@@ -98,34 +123,3 @@ void toBinary(int n, int len) {
     free(binary);
     return;
 }
-
-void shiftand(note * original, int M, note * suspect, int T) {
-    // pre process
-    // For each original element, create a mask with each suspect element
-    // Making a mask type array
-    
-    int alfabet_size = 0;
-    note * original_Alfabet = sh_GetAlfebet(original, M, &alfabet_size);
-
-    // Make masks of ocorrences
-    mask * mask_List = (mask *) malloc(sizeof(mask) * alfabet_size);
-
-    sh_DefineBitSequencesTo0(mask_List, original_Alfabet, alfabet_size);
-
-    int result = 0;
-
-    sh_DefineBitMask(mask_List, alfabet_size, suspect, T);
-
-    // for (int i = 0; i < alfabet_size; i++) {
-    //     printf("Mask %d: ", original_Alfabet[i]);
-    //     printf("%d\n", mask_List[i].bit_sequence);
-    // }
-
-    for (int i = 0; i < alfabet_size; i++) {
-        toBinary(mask_List[i].bit_sequence, 64);
-    }
-
-    free(original_Alfabet);
-    free(mask_List);
-
-} 
