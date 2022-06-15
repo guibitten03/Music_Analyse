@@ -25,8 +25,8 @@ struct mask_t {
 static note * sh_GetAlfebet(note * original, int M, int * current_size);
 static int sh_CompairElementsOnAlfabet(note * alfabet, int current_size, int nextOE);
 static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet, int alfabet_size);
-static void sh_DefineBitMask(mask_List, alfabet_size, suspect, T);
-static void sh_FindPatternSuspect(mask * mask_List, note * original, int M, int T);
+static void sh_DefineBitMask(mask * mask_List, int alfabet_size, note * suspect, int T);
+static void sh_FindPatternSuspect(mask * mask_List, note * suspect, note * original, int M, int T);
 
 static void toBinary(int n, int len);
 static void printMasks(mask * mask_List, int M);
@@ -78,9 +78,9 @@ static void sh_DefineBitMask(mask * mask_List, int alfabet_size, note * suspect,
     }
 }
 
-static void sh_FindPatternSuspect(mask * mask_List, note * original, int M, int T) {
+static void sh_FindPatternSuspect(mask * mask_List, note * suspect, note * original, int M, int T) {
     int result = 0, result_alt = 0;
-    int areSimilar;
+    int areSimilar, count;
     short last_distance;
     for (int i = 0; i < M; i++) {
         note suspect_note = original[i];
@@ -88,8 +88,8 @@ static void sh_FindPatternSuspect(mask * mask_List, note * original, int M, int 
         result = (result >> 1) | 1 << (T - 1); 
         result_alt = result & mask_List[suspect_note].bit_sequence;
         
-        areSimilar = nt_areSimilars(suspect_note, , &last_distance);
-        printf("%d\n", areSimilar); 
+        //areSimilar = nt_areSimilars(suspect_note, suspect[count], &last_distance);
+        printf("%d\n", count); 
 
         if (((result_alt & (01)) != 0)) {
             printf("S %d\n", (i - T + 1));
@@ -114,10 +114,10 @@ void shiftand(note * original, int M, note * suspect, int T) {
 
     sh_DefineBitMask(mask_List, alfabet_size, suspect, T);
 
-    sh_FindPatternSuspect(mask_List, original, M, T);
+    sh_FindPatternSuspect(mask_List, suspect, original, M, T);
 
-    printAlfabet(original_Alfabet, alfabet_size);
-    printMasks(mask_List, M);
+    //printAlfabet(original_Alfabet, alfabet_size);
+    //printMasks(mask_List, M);
     printf("----------\n");
 
 } 
