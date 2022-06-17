@@ -88,19 +88,14 @@ static void sh_FindSuspectPattern(mask * mask_List, note * suspect, note * alfab
         result = (result >> 1) | 1 << (T - 1); 
         result_alt = result & mask_List[suspect_note].bit_sequence;
         
-        // How i can compair the distance of notes. I have to compair the distance of the note i have in original and the
-        // note that are compair in the suspect note
-        // Is the suspect note and 
-        // How i know that are happening casament?
-        // r and 10 = 10 -> reiniciou a contagem
-        // r and 10 = 00 -> não tem casamento
-        
         areSimilar = nt_areSimilars(suspect_note, alfabet[suspect_note], &last_distance);
-        printf("%d, %d, %d\n", areSimilar, suspect_note, alfabet[suspect_note]); 
+        //printf("%d, %d, %d\n", areSimilar, suspect_note, alfabet[suspect_note]); 
+        printf("%d: ", i);
+        toBinary(result_alt, 64);
 
-        if (((result_alt & (01)) != 0)) {
+        if (((result_alt & (1 << T)) != 0)) {
             printf("S %d\n", (i - T + 1));
-            //return;
+            return;
         }   
     }
     printf("N\n");
@@ -123,7 +118,7 @@ void shiftand(note * original, int M, note * suspect, int T) {
 
     sh_FindSuspectPattern(mask_List, suspect, original_Alfabet, original, M, T);
 
-    printAlfabet(original_Alfabet, alfabet_size);
+    //printAlfabet(original_Alfabet, alfabet_size);
     //printMasks(mask_List, M);
     printf("----------\n");
 
