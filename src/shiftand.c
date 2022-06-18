@@ -86,14 +86,12 @@ static void sh_FindSuspectPattern(mask * mask_List, note * suspect, note * alfab
         note suspect_note = original[i];
 
         result = (result >> 1) | 1 << (T - 1); 
-        result_alt = result & mask_List[suspect_note].bit_sequence;
+        result = result & mask_List[suspect_note].bit_sequence;
         
         areSimilar = nt_areSimilars(suspect_note, alfabet[suspect_note], &last_distance);
         //printf("%d, %d, %d\n", areSimilar, suspect_note, alfabet[suspect_note]); 
-        printf("%d: ", i);
-        toBinary(result_alt, 64);
 
-        if (((result_alt & (1 << T)) != 0)) {
+        if (((result & (01)) != 0)) {
             printf("S %d\n", (i - T + 1));
             return;
         }   

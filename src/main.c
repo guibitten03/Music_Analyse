@@ -142,7 +142,7 @@ void callMethod(long method, note * original, int M, note * suspect, int T) {
 			bruteForce(original, M, suspect, T);
 		break;
 
-		case 2:
+		case 4:
 			shiftand(original, M, suspect, T);
 		break;		
 
