@@ -3,8 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <math.h>
 
-typedef u_int64_t note_64; 
+#define ALFABET_SIZE 12
+
+typedef u_int64_t mask_64; 
 
 /*
     C, B# = 0
@@ -17,79 +20,76 @@ typedef struct mask * Mask;
 
 struct mask_t {
     note element;
-    int last_bit;
-    note_64 bit_sequence;
+    mask_64 bit_sequence;
 };
 
 
-static note * sh_GetAlfebet(note * original, int M, int * current_size);
-static int sh_CompairElementsOnAlfabet(note * alfabet, int current_size, int nextOE);
-static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet, int alfabet_size);
-static void sh_DefineBitMask(mask * mask_List, int alfabet_size, note * suspect, int T);
-static void sh_FindSuspectPattern(mask * mask_List, note * suspect, note * alfabet, note * original, int M, int T);
+static note * sh_GetAlfebet();
+static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet);
+static void sh_DefineBitMask(mask * mask_List, note * suspect, int T);
+static int sh_IsSemelhants(int current_element, int mask_element);
+static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int T);
 
 static void toBinary(int n, int len);
-static void printMasks(mask * mask_List, int M);
-static void printAlfabet(note * alfabet, int size);
+static void printMasks(mask * mask_List);
 
-static int sh_CompairElementsOnAlfabet(note * alfabet, int current_size, int nextOE) {
-    for (int i = 0; i < current_size; i++) {
-        if (alfabet[i] == nextOE) {
-            return 0;
-        }
-    }
-    return 1;
-}
+static note * sh_GetAlfebet() {
+    note * alfabet = (note *) malloc(sizeof(note) * ALFABET_SIZE);
 
-static note * sh_GetAlfebet(note * original, int M, int * current_size) {
-    note * alfabet = (note *) malloc(sizeof(note) * M);
-
-    for (int i = 0; i < M; i++) {
-        alfabet[i] = -1;
-    }
-
-    for (int i = 0; i < M; i++) {
-        note first_alfabet_note = original[i];
-        alfabet[first_alfabet_note] = first_alfabet_note;
-        *(current_size) = *(current_size) + 1;
+    for (int i = 0; i < ALFABET_SIZE; i++) {
+        alfabet[i] = i;
     }
     
     return alfabet;
 }
 
-static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet, int alfabet_size) {
-    for (int i = 0; i < alfabet_size; i++) {
+static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet) {
+    for (int i = 0; i < ALFABET_SIZE; i++) {
         mask_list[i].element = alfabet[i];
         mask_list[i].bit_sequence = 0;
     }
 }
 
-static void sh_DefineBitMask(mask * mask_List, int alfabet_size, note * suspect, int T) {
+static int sh_IsSemelhants(int current_element, int mask_element) {
+    if(current_element == mask_element) {
+        return 1;
+    }
+
+    for (int i = 0; i <= 3; i++) {
+        double base = 2, distance_pow2 = (double)i;
+        double distance = pow(base, distance_pow2);
+        if ((current_element + distance) == (double)mask_element) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// Define distance and semelhant element
+
+static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
     int current_element;
 
     for (int i = 0; i < T; i++) {
         current_element = suspect[i];
 
-        for (int j = 0; j < alfabet_size; j++) {
-            if (current_element == mask_List[j].element) {
+        for (int j = 0; j < ALFABET_SIZE; j++) {
+            if (sh_IsSemelhants(current_element, mask_List[j].element)) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
             }
         }
     }
 }
 
-static void sh_FindSuspectPattern(mask * mask_List, note * suspect, note * alfabet, note * original, int M, int T) {
-    int result = 0, result_alt = 0;
-    int areSimilar, count;
-    short last_distance;
+static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int T) {
+    int result = 0;
+
     for (int i = 0; i < M; i++) {
         note suspect_note = original[i];
 
         result = (result >> 1) | 1 << (T - 1); 
         result = result & mask_List[suspect_note].bit_sequence;
-        
-        areSimilar = nt_areSimilars(suspect_note, alfabet[suspect_note], &last_distance);
-        //printf("%d, %d, %d\n", areSimilar, suspect_note, alfabet[suspect_note]); 
 
         if (((result & (01)) != 0)) {
             printf("S %d\n", (i - T + 1));
@@ -99,39 +99,35 @@ static void sh_FindSuspectPattern(mask * mask_List, note * suspect, note * alfab
     printf("N\n");
 }
 
-    //11 >> 1 = 01
-    //11 << 1 = 110
+// Find semelhant patterns:
+// Distances: 1, 2, 4, 8
+// Ex: C -> C# -> D -> E -> Ab
+//     0    1     2    4    8
+
+//11 >> 1 = 01
+//11 << 1 = 110
 
 void shiftand(note * original, int M, note * suspect, int T) {
-    int alfabet_size = 0;
-    note * original_Alfabet = sh_GetAlfebet(original, M, &alfabet_size);
+    note * original_Alfabet = sh_GetAlfebet();
 
-    mask * mask_List = (mask *) malloc(sizeof(mask) * alfabet_size);
+    mask * mask_List = (mask *) malloc(sizeof(mask) * ALFABET_SIZE);
 
-    alfabet_size = 12;
+    sh_DefineBitSequencesTo0(mask_List, original_Alfabet);
 
-    sh_DefineBitSequencesTo0(mask_List, original_Alfabet, alfabet_size);
+    sh_DefineBitMask(mask_List, suspect, T);
 
-    sh_DefineBitMask(mask_List, alfabet_size, suspect, T);
+    sh_FindSuspectPattern(mask_List, original, M, T);
 
-    sh_FindSuspectPattern(mask_List, suspect, original_Alfabet, original, M, T);
-
-    //printAlfabet(original_Alfabet, alfabet_size);
-    //printMasks(mask_List, M);
-    printf("----------\n");
+    printMasks(mask_List);
+    free(original_Alfabet);
+    free(mask_List);
 
 } 
 
-static void printMasks(mask * mask_List, int M) {
-    for (int i = 0; i < M; i++) {
+static void printMasks(mask * mask_List) {
+    for (int i = 0; i < ALFABET_SIZE; i++) {
         printf("Note %d: ", mask_List[i].element);
         toBinary(mask_List[i].bit_sequence, 64);
-    }
-}
-
-static void printAlfabet(note * alfabet, int size) {
-    for (int i = 0; i < size; i++) {
-        printf("i: %d\n", alfabet[i]);
     }
 }
 

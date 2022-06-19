@@ -8,7 +8,7 @@ OBJ_DIR := obj
 OBJ := $(addprefix $(OBJ_DIR)/, $(notdir $(patsubst %.c, %.o, $(wildcard $(SRC_DIR)/*.c))))
 
 $(NAME): OBJ_DIR_CHECKING $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -lm
 
 obj/%.o: $(SRC_DIR)/%.c
 	$(CC) $(DEFS) -c $(CFLAGS) $< -o $@
