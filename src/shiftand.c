@@ -69,13 +69,13 @@ static int sh_IsSemelhants(int current_element, int mask_element) {
 // Define distance and semelhant element
 
 static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
-    int current_element;
+    int current_element, last_distance = 0;
 
     for (int i = 0; i < T; i++) {
         current_element = suspect[i];
 
         for (int j = 0; j < ALFABET_SIZE; j++) {
-            if (sh_IsSemelhants(current_element, mask_List[j].element)) {
+            if (nt_areSimilars(current_element, mask_List[j].element, &last_distance)) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
             }
         }
