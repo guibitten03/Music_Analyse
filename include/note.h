@@ -2,6 +2,8 @@
 #define MUSIC_ANALYSE_NOTE_H
 	#include <stdint.h>
 
+	extern const int szAlphabet;
+
 	typedef uint8_t note;
 
 	extern const note C;
