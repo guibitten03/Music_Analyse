@@ -12,13 +12,13 @@ void BMH(note * original, int M, note * suspect, int T) {
 
     BMH_preprocessing(pos, suspect, T);
 
+	printf("preprocessing table: ");
     for (int i = 0; i < szAlphabet; i++) {
         printf("%d ", pos[i]);
     }
     printf("\n");
 
     for (int i = T - 1; i < M; i++) {
-
         for (int l = 0; l < M; l++) printf("%u\t", original[l]);
         printf("\n");
         for (int l = 0; l < i - (T - 1); l++) printf("-\t");
@@ -41,13 +41,12 @@ void BMH(note * original, int M, note * suspect, int T) {
         i = i + pos[BMH_hashNote(original[k])];
         i--;
     }
-    
     printf("N\n");
 }
 
 static void BMH_preprocessing(int * preprocessingTable, note * P, int m) {
     for (int i = 0; i < szAlphabet; i++) {
-        preprocessingTable[i] = m;
+        preprocessingTable[i] = m - 1;
     }
 
     for (int i = 0; i < m - 1; i++) {

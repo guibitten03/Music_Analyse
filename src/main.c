@@ -29,6 +29,12 @@ void parseNotes(char * noteSequence, note * notes);
 void callMethod(long method, note * original, int M, note * suspect, int T);
 
 int main(int argc, char ** argv) {
+	//if (1) {
+	//	short diff = 2;
+	//	printf("%d\n", nt_areSimilars(C, C, &diff));
+	//	return 0;
+	//}
+
 	args arguments;
 	argsParse(&arguments, argc, argv);
 

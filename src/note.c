@@ -6,7 +6,7 @@
 #define max(a, b) (a >= b ? a : b)
 #define min(a, b) (a <= b ? a : b)
 
-const int szAlphabet = 7;
+const int szAlphabet = 12;
 
 const note C = 0;
 const note D = 2;
