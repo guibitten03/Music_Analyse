@@ -29,12 +29,6 @@ void parseNotes(char * noteSequence, note * notes);
 void callMethod(long method, note * original, int M, note * suspect, int T);
 
 int main(int argc, char ** argv) {
-	//if (1) {
-	//	short diff = 2;
-	//	printf("%d\n", nt_areSimilars(C, C, &diff));
-	//	return 0;
-	//}
-
 	args arguments;
 	argsParse(&arguments, argc, argv);
 
@@ -81,6 +75,7 @@ int main(int argc, char ** argv) {
 #ifdef TIMING
 	t_Finalize(&t);
 	t_Print(&t, __func__, 0, 0);
+	fclose(timingstdout);
 #endif
 
 	fclose(inputFile);
@@ -146,13 +141,17 @@ void callMethod(long method, note * original, int M, note * suspect, int T) {
 			bruteForce(original, M, suspect, T);
 		break;
 
-		case 4:
-			shiftand(original, M, suspect, T);
-		break;
+		case 2:
+			KMP(original, M, suspect, T);
+		break;	
 
 		case 3:
 			BMH(original, M, suspect, T);
 		break;	
+
+		case 4:
+			shiftand(original, M, suspect, T);
+		break;
 
 		default:
 			fprintf(stderr, "Method doesn't exist or not implemented yet: %ld\n", method);
