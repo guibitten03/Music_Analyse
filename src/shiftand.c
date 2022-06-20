@@ -27,7 +27,6 @@ struct mask_t {
 static note * sh_GetAlfebet();
 static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet);
 static void sh_DefineBitMask(mask * mask_List, note * suspect, int T);
-static int sh_IsSemelhants(int current_element, int mask_element);
 static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int T);
 
 static void toBinary(int n, int len);
@@ -50,24 +49,6 @@ static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet) {
     }
 }
 
-static int sh_IsSemelhants(int current_element, int mask_element) {
-    if(current_element == mask_element) {
-        return 1;
-    }
-
-    for (int i = 0; i <= 3; i++) {
-        double base = 2, distance_pow2 = (double)i;
-        double distance = pow(base, distance_pow2);
-        if ((current_element + distance) == (double)mask_element) {
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-// Define distance and semelhant element
-
 static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
     int current_element, last_distance = -1;
 
@@ -75,8 +56,8 @@ static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
         current_element = suspect[i];
 
         for (int j = 0; j < ALFABET_SIZE; j++) {
-            if (nt_areSimilars(current_element, mask_List[j].element, &last_distance)) {
-                printf("%d %d\n", current_element, mask_List[j].element);
+            int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
+            if ((current_element == mask_List[j].element) || areSimilar) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
             }
         }
@@ -105,8 +86,9 @@ static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int 
 // Ex: C -> C# -> D -> E -> Ab
 //     0    1     2    4    8
 
-//11 >> 1 = 01
-//11 << 1 = 110
+// Bit shift logic:
+// 11 >> 1 = 01
+// 11 << 1 = 110
 
 void shiftand(note * original, int M, note * suspect, int T) {
     note * original_Alfabet = sh_GetAlfebet();
@@ -119,10 +101,8 @@ void shiftand(note * original, int M, note * suspect, int T) {
 
     sh_FindSuspectPattern(mask_List, original, M, T);
 
-    //printMasks(mask_List);
     free(original_Alfabet);
     free(mask_List);
-
 } 
 
 static void printMasks(mask * mask_List) {

@@ -104,9 +104,7 @@ short nt_areSimilars(note a, note b, short * InOutLastDistance) {
 
 	*InOutLastDistance = diff;
 
-	printf("Is Silimar: %d\n", diff);
-
-	return diff == 0 || diff == 1 || isPowerOf2(diff);
+	return diff == 0 || isPowerOf2(diff);
 }
 
 short isPowerOf2(int n) {
