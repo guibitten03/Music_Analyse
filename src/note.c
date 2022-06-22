@@ -98,7 +98,7 @@ note nt_Flat(note n) {
 short nt_areSimilars(note a, note b, short * InOutLastDistance) {
 	note MRN = max(a, b);
 	note MLN = min(a, b);
-	note diff = MRN - MLN;
+	note diff = a - b;
 
 	if ((*InOutLastDistance != -1 && diff != *InOutLastDistance)) {
 		return 0;
