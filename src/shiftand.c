@@ -5,8 +5,6 @@
 #include <stdint.h>
 #include <math.h>
 
-#define ALFABET_SIZE 12
-
 typedef u_int64_t mask_64; 
 
 /*
@@ -33,9 +31,9 @@ static void toBinary(int n, int len);
 static void printMasks(mask * mask_List);
 
 static note * sh_GetAlfebet() {
-    note * alfabet = (note *) malloc(sizeof(note) * ALFABET_SIZE);
+    note * alfabet = (note *) malloc(sizeof(note) * szAlphabet);
 
-    for (int i = 0; i < ALFABET_SIZE; i++) {
+    for (int i = 0; i < szAlphabet; i++) {
         alfabet[i] = i;
     }
     
@@ -43,7 +41,7 @@ static note * sh_GetAlfebet() {
 }
 
 static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet) {
-    for (int i = 0; i < ALFABET_SIZE; i++) {
+    for (int i = 0; i < szAlphabet; i++) {
         mask_list[i].element = alfabet[i];
         mask_list[i].bit_sequence = 0;
     }
@@ -55,7 +53,7 @@ static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
     for (int i = 0; i < T; i++) {
         current_element = suspect[i];
 
-        for (int j = 0; j < ALFABET_SIZE; j++) {
+        for (int j = 0; j < szAlphabet; j++) {
             int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
             if ((current_element == mask_List[j].element) || areSimilar) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
@@ -93,7 +91,7 @@ static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int 
 void shiftand(note * original, int M, note * suspect, int T) {
     note * original_Alfabet = sh_GetAlfebet();
 
-    mask * mask_List = (mask *) malloc(sizeof(mask) * ALFABET_SIZE);
+    mask * mask_List = (mask *) malloc(sizeof(mask) * szAlphabet);
 
     sh_DefineBitSequencesTo0(mask_List, original_Alfabet);
 
@@ -106,7 +104,7 @@ void shiftand(note * original, int M, note * suspect, int T) {
 } 
 
 static void printMasks(mask * mask_List) {
-    for (int i = 0; i < ALFABET_SIZE; i++) {
+    for (int i = 0; i < szAlphabet; i++) {
         printf("Note %d: ", mask_List[i].element);
         toBinary(mask_List[i].bit_sequence, 64);
     }
