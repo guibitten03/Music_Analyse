@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static int BMH_hashNote(note n);
-
 static void BMH_preprocessing(int * pos, note * P, int m);
 
 void BMH(note * original, int M, note * suspect, int T) {
@@ -26,7 +24,7 @@ void BMH(note * original, int M, note * suspect, int T) {
             k--; j--;
         }
 
-        i = i + pos[BMH_hashNote(original[k])];
+        i = i + pos[nt_Hash(original[k])];
         i--;
     }
     printf("N\n");
@@ -38,10 +36,6 @@ static void BMH_preprocessing(int * preprocessingTable, note * P, int m) {
     }
 
     for (int i = 0; i < m - 1; i++) {
-        preprocessingTable[BMH_hashNote(P[i])] = m - i - 1;
+        preprocessingTable[nt_Hash(P[i])] = m - i - 1;
     }
-}
-
-static int BMH_hashNote(note n) {
-    return ((n / 2) + (n % 2));
 }
