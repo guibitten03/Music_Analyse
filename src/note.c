@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define max(a, b) (a >= b ? a : b)
 #define min(a, b) (a <= b ? a : b)
+#define max(a, b) (a >= b ? a : b)
 
 const int szAlphabet = 12;
 
@@ -20,6 +20,9 @@ static note getNoteFromChar(char c);
 static note applyModifier(note n, char modifier);
 
 static short isPowerOf2(int n);
+
+static int distLooping(note a, note b);
+static int distStatic(note a, note b);
 
 note nt_New(const char * strNote, int sz) {
 	if (sz <= 0) {
@@ -95,18 +98,58 @@ note nt_Flat(note n) {
 	return n - 1;
 }
 
-short nt_areSimilars(note a, note b, short * InOutLastDistance) {
-	note MRN = max(a, b);
-	note MLN = min(a, b);
-	note diff = a - b;
+int nt_Hash(note n) {
+	return (int)(n);
+}
 
-	if ((*InOutLastDistance != -1 && diff != *InOutLastDistance)) {
+short nt_areSimilars(note a, note b, short * InOutLastDistance) {
+	int lDist = distLooping(a, b);
+	int sDist = distStatic(a, b);
+
+	int minDist = min(lDist, sDist);
+	int maxDist = max(lDist, sDist);
+
+	if (*InOutLastDistance == -1) {
+		if (isPowerOf2(minDist) || minDist == 0) {
+			*InOutLastDistance = minDist;
+			return 1;
+		}
+		if (isPowerOf2(maxDist) || maxDist == 0) {
+			*InOutLastDistance = maxDist;
+			return 1;
+		}
+		return 0;
+	} else {
+		if (minDist == *InOutLastDistance) {
+			*InOutLastDistance = minDist;
+			return 1;
+		}
+		if (maxDist == *InOutLastDistance) {
+			*InOutLastDistance = maxDist;
+			return 1;
+		}
 		return 0;
 	}
 
-	*InOutLastDistance = diff;
+	return 0;
+}
 
-	return diff == 0 || isPowerOf2(diff);
+static int distLooping(note a, note b) {
+	note MRN = max(a, b);
+	note MLN = min(a, b);
+
+	int dist = (int)(szAlphabet - (nt_Hash(MRN) + 1) + (nt_Hash(MLN) + 1));
+	//printf("distLooping: %d\n", dist);
+	return dist;
+}
+
+static int distStatic(note a, note b) {
+	note MRN = max(a, b);
+	note MLN = min(a, b);
+
+	int dist = (int)(MRN - MLN);
+	//printf("distStatic: %d\n", dist);
+	return dist;
 }
 
 short isPowerOf2(int n) {

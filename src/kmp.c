@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef struct note_stack_node_t {
 	struct note_stack_node_t * previous;
@@ -18,33 +19,63 @@ note ns_Pop(NStack s);
 void ns_Add(NStack s, note n);
 void ns_Free(NStack s);
 
-void ns_TextToStack(NStack s, note * text, int M);
-
-int * km_Preprocessing (note * suspect, int T);
+static void KMP_TextToStack(NStack s, note * text, int M);
+static int * KMP_Preprocessing (note * suspect, int T);
+static note * KMP_SortDescending (note * original_Text, int size);
 
 void KMP(note * original, int M, note * suspect, int T) {
 	NStack s = ns_New();
 
-	ns_TextToStack(s, original, M);
+	note * invert_Text = KMP_SortDescending(original, M);
 
-	int * occurrence_pos = km_Preprocessing(suspect, T);
+	KMP_TextToStack(s, invert_Text, M);
 
-	for (int i = 0; i < T; i++) {
-		printf("%d\n", occurrence_pos[i]);
-	}
+	int * occurrence_pos = KMP_Preprocessing(suspect, T);
 
-	int i = 0, j = 0;
-	while (j < M) {
-		
-		if () {
+	int j = 0, stack_Size = s->sz;
+	while (s->sz != 0) { 
+		note popped_Item = ns_Pop(s);
+		if (popped_Item == -1) break;
 
+		if (popped_Item == suspect[j]) {
+			j++;
+			if (j == T) {
+				int indexOfOccurrence = (stack_Size - s->sz) - (j - 1);
+				printf("S %d\n", indexOfOccurrence);
+				break;
+			}
+			continue;
+		} else {
+			while (j != 0) {
+				int current_Position = j - 1;
+				j = occurrence_pos[current_Position];
+				if (popped_Item == suspect[j]) {
+					j++;
+					break;
+				}
+			}
 		}
 	}
 
+	free(invert_Text);
 	ns_Free(s);
 }
 
-int * km_Preprocessing (note * suspect, int T) {
+static note * KMP_SortDescending (note * original_Text, int size) {
+	note * invert_Text = (note *) malloc(sizeof(note) * size);
+	int first_Pivot = 0, last_Pivot = size - 1;
+
+	while (first_Pivot != size) {
+		invert_Text[first_Pivot] = original_Text[last_Pivot];
+
+		first_Pivot++;
+		last_Pivot--;
+	}
+
+	return invert_Text;
+}
+
+static int * KMP_Preprocessing (note * suspect, int T) {
 	int * occurrencies = (int*) malloc(sizeof(int) * T);
 
 	for (int i = 0; i < T; i++) {
@@ -73,7 +104,7 @@ int * km_Preprocessing (note * suspect, int T) {
 
 }
 
-void ns_TextToStack(NStack s, note * text, int M) {
+static void KMP_TextToStack(NStack s, note * text, int M) {
 	for (int i = 0; i < M; i++) {
 		ns_Add(s, text[i]);
 	}
@@ -88,7 +119,7 @@ NStack ns_New(void) {
 note ns_Pop(NStack s) {
 	if (s->sz == 0) {
 		fputs("ERROR: Trying to pop a note from an empty stack.\n", stderr);
-		exit(EXIT_FAILURE);
+		return -1;
 	}
 
 	NSNode popped = s->top;
