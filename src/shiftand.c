@@ -55,6 +55,7 @@ static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
 
         for (int j = 0; j < szAlphabet; j++) {
             int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
+            //last_distance = -1;
             if ((current_element == mask_List[j].element) || areSimilar) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
             }
