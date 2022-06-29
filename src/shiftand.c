@@ -56,12 +56,36 @@ static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
 
         for (int j = 0; j < szAlphabet; j++) {
             int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
-            printf("%d - %d : %d\n", current_element, mask_List[j].element, areSimilar);
+            //printf("%d - %d : %d\n", current_element, mask_List[j].element, areSimilar);
             //last_distance = -1;
             if ((current_element == mask_List[j].element) || areSimilar) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
             }
         }
+    }
+
+    // 1 problema: Na comparação, nao consigo testar se a distancia é aceita
+    // for (int i = 0; i < szAlphabet; i++) {
+    //     current_element = i;
+
+    //     for (int j = 0; j < T; j++) {
+    //         int areSimilar = nt_areSimilars(current_element, mask_List[i].element, &last_distance);
+    //         //printf("%d - %d : %d\n", current_element, mask_List[j].element, areSimilar);
+    //         //last_distance = -1;
+    //         if ((current_element == mask_List[i].element) || areSimilar) {
+    //             mask_List[i].bit_sequence = mask_List[i].bit_sequence | 1 << (T - j - 1);
+    //         }
+    //     }
+    // }
+}
+
+static void sh_ConstructDistanceText (note * text, int size) {
+    int * distanceVertices = (int*) malloc(sizeof(int) * size);
+    int lastDistance = -1;
+
+    distanceVertices[0] = -1;
+    for (int i = 1; i < size; i++) {
+        if (nt_areSimilars(text[i], text[i + 1], &lastDistance));
     }
 }
 
@@ -78,6 +102,10 @@ static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int 
             printf("S %d\n", (i - T + 1));
             return;
         }  
+        // if (result % 2 == 0) {
+        //     printf("S %d\n", (i - T + 1));
+        //     return;
+        // }  
     }
     printf("N\n");
 }
