@@ -17,6 +17,7 @@ void bruteForce(note * original, int M, note * suspect, int T) {
 
 		short lastDistance = -1;
 		while (nt_areSimilars(original[k], suspect[j], &lastDistance)) {
+			printf("%d\n", lastDistance);
 			k++; j++;
 			if (j == T) {
 				printf("S %d\n", i);

@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include <math.h>
 
+// Caminho de dados
+// Multiplicação e divisão
+// Risc e Cisc
+// 
+
 typedef u_int64_t mask_64; 
 
 /*
@@ -48,17 +53,16 @@ static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet) {
 }
 
 static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
-    int current_element;
     short last_distance = -1;
 
     for (int i = 0; i < T; i++) {
-        current_element = suspect[i];
+        int current_element = suspect[i];
 
         for (int j = 0; j < szAlphabet; j++) {
-            int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
-            //printf("%d - %d : %d\n", current_element, mask_List[j].element, areSimilar);
+            //int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
+            //printf("%d - %d : %d - lastD: %d\n", current_element, mask_List[j].element, areSimilar, last_distance);
             //last_distance = -1;
-            if ((current_element == mask_List[j].element) || areSimilar) {
+            if (current_element == mask_List[j].element) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
             }
         }
@@ -68,26 +72,30 @@ static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
     // for (int i = 0; i < szAlphabet; i++) {
     //     current_element = i;
 
+    // for (int i = 0; i < szAlphabet; i++) {
+    //     int current_element = i;
+
     //     for (int j = 0; j < T; j++) {
-    //         int areSimilar = nt_areSimilars(current_element, mask_List[i].element, &last_distance);
-    //         //printf("%d - %d : %d\n", current_element, mask_List[j].element, areSimilar);
+    //         int suspectElement = suspect[j];
+    //         int areSimilar = nt_areSimilars(suspectElement, current_element, &last_distance);
+    //         printf("%d - %d : %d - lastD: %d\n", current_element, suspectElement, areSimilar, last_distance);
     //         //last_distance = -1;
-    //         if ((current_element == mask_List[i].element) || areSimilar) {
-    //             mask_List[i].bit_sequence = mask_List[i].bit_sequence | 1 << (T - j - 1);
+    //         if ((current_element == suspectElement) || areSimilar) {
+    //             mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - j - 1);
     //         }
     //     }
     // }
 }
 
-static void sh_ConstructDistanceText (note * text, int size) {
-    int * distanceVertices = (int*) malloc(sizeof(int) * size);
-    int lastDistance = -1;
+// static void sh_ConstructDistanceText (note * text, int size) {
+//     int * distanceVertices = (int*) malloc(sizeof(int) * size);
+//     int lastDistance = -1;
 
-    distanceVertices[0] = -1;
-    for (int i = 1; i < size; i++) {
-        if (nt_areSimilars(text[i], text[i + 1], &lastDistance));
-    }
-}
+//     distanceVertices[0] = -1;
+//     for (int i = 1; i < size; i++) {
+//         if (nt_areSimilars(text[i], text[i + 1], &lastDistance));
+//     }
+// }
 
 static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int T) {
     int result = 0;

@@ -106,7 +106,7 @@ short nt_areSimilars(note a, note b, short * InOutLastDistance) {
 	int lDist = distLooping(a, b);
 	int sDist = distStatic(a, b);
 
-	int minDist = min(lDist, sDist);
+	int minDist = min(lDist, sDist);	
 	int maxDist = max(lDist, sDist);
 
 	if (*InOutLastDistance == -1) {
