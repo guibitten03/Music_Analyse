@@ -59,11 +59,12 @@ static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
         int current_element = suspect[i];
 
         for (int j = 0; j < szAlphabet; j++) {
-            //int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
-            //printf("%d - %d : %d - lastD: %d\n", current_element, mask_List[j].element, areSimilar, last_distance);
-            //last_distance = -1;
-            if (current_element == mask_List[j].element) {
+            int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
+            printf("%d - %d : %d - lastD: %d\n", current_element, mask_List[j].element, areSimilar, last_distance);
+            if (areSimilar) {
                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
+            } else {
+                last_distance = -1;
             }
         }
     }

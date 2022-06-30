@@ -26,36 +26,34 @@ static note * KMP_SortDescending (note * original_Text, int size);
 void KMP(note * original, int M, note * suspect, int T) {
 	NStack s = ns_New();
 
-	note * invert_Text = KMP_SortDescending(original, M);
+	note * invertText = KMP_SortDescending(original, M);
 
-	KMP_TextToStack(s, invert_Text, M);
+	KMP_TextToStack(s, invertText, M);
 
-	int * occurrence_pos = KMP_Preprocessing(suspect, T);
-	short last_distance = -1;
+	int * occurrencePos = KMP_Preprocessing(suspect, T);
 
-	int j = 0, stack_Size = s->sz;
+	int j = 0, stackSize = s->sz;
+	short lastDistance = -1; 
 
-	// for (int i = 0; i < T; i++) {
-	// 	printf("%d\n", occurrence_pos[i]);
-	// }
+	while (s->sz != 0) {
+		note poppedItem = ns_Pop(s);
+		if (poppedItem == -1) break;
 
-	while (s->sz != 0) { 
-		note popped_Item = ns_Pop(s);
-		if (popped_Item == -1) break;
-
-		if (nt_areSimilars(popped_Item, suspect[j], &last_distance)) {
+		if (nt_areSimilars(poppedItem, suspect[j], &lastDistance)) {
 			j++;
 			if (j == T) {
-				int indexOfOccurrence = (stack_Size - s->sz) - j;
+				int indexOfOccurrence = (stackSize - s->sz) - j;
 				printf("S %d\n", indexOfOccurrence);
 				break;
 			}
 			continue;
 		} else {
+			lastDistance = -1;
 			while (j != 0) {
-				int current_Position = j - 1;
-				j = occurrence_pos[current_Position];
-				if (nt_areSimilars(popped_Item, suspect[j], &last_distance)) {
+				int currentPosition = j - 1;
+				j = occurrencePos[currentPosition];
+
+				if (nt_areSimilars(poppedItem, suspect[j], &lastDistance)) {
 					j++;
 					break;
 				}
@@ -67,23 +65,23 @@ void KMP(note * original, int M, note * suspect, int T) {
 		}
 	}
 
-	free(occurrence_pos);
-	free(invert_Text);
+	free(occurrencePos);
+	free(invertText);
 	ns_Free(s);
 }
 
-static note * KMP_SortDescending (note * original_Text, int size) {
-	note * invert_Text = (note *) malloc(sizeof(note) * size);
-	int first_Pivot = 0, last_Pivot = size - 1;
+static note * KMP_SortDescending (note * originalText, int size) {
+	note * invertText = (note *) malloc(sizeof(note) * size);
+	int firstPivot = 0, lastPivot = size - 1;
 
-	while (first_Pivot != size) {
-		invert_Text[first_Pivot] = original_Text[last_Pivot];
+	while (firstPivot != size) {
+		invertText[firstPivot] = originalText[lastPivot];
 
-		first_Pivot++;
-		last_Pivot--;
+		firstPivot++;
+		lastPivot--;
 	}
 
-	return invert_Text;
+	return invertText;
 }
 
 static int * KMP_Preprocessing (note * suspect, int T) {
@@ -94,10 +92,10 @@ static int * KMP_Preprocessing (note * suspect, int T) {
 	}
 
 	int i = 0, j = 1;
-	short last_distance = -1;
+	short lastDistance = -1;
 
 	while (j < T) {
-		if (nt_areSimilars(suspect[i], suspect[j], &last_distance)) {
+		if (nt_areSimilars(suspect[i], suspect[j], &lastDistance)) {
 			i++;
 			occurrencies[j] = i;
 			j++;
