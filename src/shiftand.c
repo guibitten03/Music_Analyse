@@ -27,7 +27,7 @@ typedef struct mask * Mask;
 
 struct mask_t {
     note element;
-    mask_64 bit_sequence;
+    mask_64 bit_sequences[SIZE_DISTANCE_MASKS];
 };
 
 
@@ -57,61 +57,21 @@ static note * sh_GetAlfebet() {
 static void sh_DefineBitSequencesTo0(mask * mask_list) {
     for (int i = 0; i < szAlphabet; i++) {
         mask_list[i].element = i;
-        mask_list[i].bit_sequence = 0;
+        mask_list[i].bit_sequences[i] = 0;
     }
 }
 
-/* Testing */
-/*
-static void sh_DefineBitMaskToEachCaracter(mask bitMaskCaracter, note * suspect, int T, int distance) {
-    //printf("Define bit mask to each caracter: %d - Distance: %d\n", bitMaskCaracter.element, distance);
-    for (int spcNote = 0; spcNote < T; spcNote++) {
-        int suspect_element = suspect[spcNote];
-
-        for (int i = 0; i < szAlphabet; i++) {
-            if ((bitMaskCaracter.element + distance) == suspect_element) {
-                bitMaskCaracter.bit_sequence = bitMaskCaracter.bit_sequence | 1 << (T - spcNote - 1);
-            }
-        }
-    }
-}
-
-static void sh_DefineMasksForDistance(mask * maskList, note * suspect, int T, int distance) {
-    for (int i = 0; i < szAlphabet; i++) {
-        sh_DefineBitMaskToEachCaracter(maskList[i], suspect, T ,distance);
-    }
-    printMasks(maskList);
-}
-
-static void sh_DefineBitMask(mask ** maskClustter, note * suspect, int T) {
-    // Define all masks to 0
-    // Define exact masks
-    // Define masks distance 1 and -1
-    // Define masks distance 2 and -2
-    // Define masks distance 4 and -4
-    // Define masks distance 8 and -8
-
-    for (int i = 0; i < SIZE_DISTANCE_MASKS; i++) {
-        maskClustter[i] = (mask*) malloc(sizeof(mask) * szAlphabet);
-        sh_DefineBitSequencesTo0(maskClustter[i]);
-    }
-
-    for (int distance = 0; distance < SIZE_DISTANCE_MASKS; distance++) {
-        sh_DefineMasksForDistance(maskClustter[distance], suspect, T, distance);
-    }
-
-}
-*/
-// ---
-
-static void sh_DefineMaskForEachNote(mask noteT, note * suspect, int T) {
-    int lastDistance = -1;
+static void sh_DefineMaskForEachNote(mask * noteT, note * suspect, int T) {
     for (int i = 0; i < T; i++) {
         note suspectNote = suspect[i];
-        if (nt_areSimilars(suspectNote, noteT.element, &lastDistance)) {
-            noteT.bit_sequence = noteT.bit_sequence | 1 << (T - i - 1);
-        } 
-        lastDistance = -1;
+
+        for (int distance = 0; distance < SIZE_DISTANCE_MASKS; distance++) {
+            int elementPlusDistance = noteT->element + distance;
+            if (nt_areSimilars((elementPlusDistance,  ))) {
+
+            }
+
+        }
     }
 }
 
@@ -134,20 +94,10 @@ static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
 
     /* Testing */
     for (int i = 0; i < szAlphabet; i++) {
-        sh_DefineMaskForEachNote(mask_List[i], suspect, T);
+        sh_DefineMasksForEachNote(mask_List[i], suspect, T);
     }
     // ---
 }
-
-// static void sh_ConstructDistanceText (note * text, int size) {
-//     int * distanceVertices = (int*) malloc(sizeof(int) * size);
-//     int lastDistance = -1;
-
-//     distanceVertices[0] = -1;
-//     for (int i = 1; i < size; i++) {
-//         if (nt_areSimilars(text[i], text[i + 1], &lastDistance));
-//     }
-// }
 
 static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int T) {
     int result = 0;
@@ -156,7 +106,7 @@ static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int 
         note suspect_note = original[i];
 
         result = (result >> 1) | 1 << (T - 1); 
-        result = result & mask_List[suspect_note].bit_sequence;
+        result = result & mask_List[suspect_note].bit_sequences;
 
         if (((result & (01)) != 0)) {
             printf("S %d\n", (i - T + 1));
