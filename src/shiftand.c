@@ -29,7 +29,12 @@ struct mask_t {
 
 static note * sh_GetAlfebet();
 static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet);
+//static void sh_DefineBitMask(mask * mask_List, note * suspect, int T);
+
+/* Testing */
 static void sh_DefineBitMask(mask * mask_List, note * suspect, int T);
+// ---
+
 static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int T);
 
 static void toBinary(int n, int len);
@@ -52,41 +57,30 @@ static void sh_DefineBitSequencesTo0(mask * mask_list, note * alfabet) {
     }
 }
 
-static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
-    short last_distance = -1;
-
-    for (int i = 0; i < T; i++) {
-        int current_element = suspect[i];
-
-        for (int j = 0; j < szAlphabet; j++) {
-            int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
-            printf("%d - %d : %d - lastD: %d\n", current_element, mask_List[j].element, areSimilar, last_distance);
-            if (areSimilar) {
-                mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
-            } else {
-                last_distance = -1;
-            }
-        }
-    }
-
-    // 1 problema: Na comparação, nao consigo testar se a distancia é aceita
-    // for (int i = 0; i < szAlphabet; i++) {
-    //     current_element = i;
-
-    // for (int i = 0; i < szAlphabet; i++) {
-    //     int current_element = i;
-
-    //     for (int j = 0; j < T; j++) {
-    //         int suspectElement = suspect[j];
-    //         int areSimilar = nt_areSimilars(suspectElement, current_element, &last_distance);
-    //         printf("%d - %d : %d - lastD: %d\n", current_element, suspectElement, areSimilar, last_distance);
-    //         //last_distance = -1;
-    //         if ((current_element == suspectElement) || areSimilar) {
-    //             mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - j - 1);
-    //         }
-    //     }
-    // }
+/* Testing */
+static void sh_DefineBitMask(mask ** maskClustter, note * suspect, int T) {
+    // Define all masks to 0
+    
 }
+// ---
+
+// static void sh_DefineBitMask(mask * mask_List, note * suspect, int T) {
+//     short last_distance = -1;
+
+//     for (int i = 0; i < T; i++) {
+//         int current_element = suspect[i];
+
+//         for (int j = 0; j < szAlphabet; j++) {
+//             //int areSimilar = nt_areSimilars(current_element, mask_List[j].element, &last_distance);
+//             //printf("%d - %d : %d - lastD: %d\n", current_element, mask_List[j].element, areSimilar, last_distance);
+//             if (current_element == mask_List[j].element | nt_areSimilars(current_element, mask_List[j].element, &last_distance)) {
+//                 mask_List[j].bit_sequence = mask_List[j].bit_sequence | 1 << (T - i - 1);
+//             } else {
+//                 last_distance = -1;
+//             }
+//         }
+//     }
+// }
 
 // static void sh_ConstructDistanceText (note * text, int size) {
 //     int * distanceVertices = (int*) malloc(sizeof(int) * size);
@@ -111,10 +105,6 @@ static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int 
             printf("S %d\n", (i - T + 1));
             return;
         }  
-        // if (result % 2 == 0) {
-        //     printf("S %d\n", (i - T + 1));
-        //     return;
-        // }  
     }
     printf("N\n");
 }
@@ -131,16 +121,24 @@ static void sh_FindSuspectPattern(mask * mask_List, note * original, int M, int 
 void shiftand(note * original, int M, note * suspect, int T) {
     note * original_Alfabet = sh_GetAlfebet();
 
-    mask * mask_List = (mask *) malloc(sizeof(mask) * szAlphabet);
+    //mask * mask_List = (mask *) malloc(sizeof(mask) * szAlphabet);
 
-    sh_DefineBitSequencesTo0(mask_List, original_Alfabet);
+    /* Testing */
+    mask ** maskClustter = (mask**) malloc(sizeof(mask*) * 9);
+    // ---
 
-    sh_DefineBitMask(mask_List, suspect, T);
+    //sh_DefineBitSequencesTo0(mask_List, original_Alfabet);
 
-    sh_FindSuspectPattern(mask_List, original, M, T);
+    //sh_DefineBitMask(mask_List, suspect, T);
+
+    /* Testing */
+    sh_DefineBitMask(maskClustter, suspect, 9);
+    // ---
+
+    //sh_FindSuspectPattern(mask_List, original, M, T);
 
     free(original_Alfabet);
-    free(mask_List);
+    //free(mask_List);
 } 
 
 static void printMasks(mask * mask_List) {
