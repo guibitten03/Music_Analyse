@@ -36,6 +36,11 @@ static void BMH_preprocessing(int * preprocessingTable, note * P, int m) {
     }
 
     for (int i = 0; i < m - 1; i++) {
-        preprocessingTable[nt_Hash(P[i])] = m - i - 1;
+		for (int j = 0; j < szAlphabet; j++) {
+			short dist = -1;
+			if (nt_areSimilars(P[i], j, &dist)) {
+				preprocessingTable[j] = m - i - 1;
+			}
+		}
     }
 }
