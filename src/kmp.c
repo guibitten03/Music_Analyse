@@ -19,6 +19,7 @@ note ns_Pop(NStack s);
 void ns_Add(NStack s, note n);
 void ns_Free(NStack s);
 
+static void KMP_FindSupectPattern(NStack s, note * suspect, int T, int * occurrencePos);
 static void KMP_TextToStack(NStack s, note * text, int M);
 static int * KMP_Preprocessing (note * suspect, int T);
 static note * KMP_SortDescending (note * original_Text, int size);
@@ -32,29 +33,36 @@ void KMP(note * original, int M, note * suspect, int T) {
 
 	int * occurrencePos = KMP_Preprocessing(suspect, T);
 
-	int j = 0, stackSize = s->sz;
+	KMP_FindSupectPattern(s, suspect, T, occurrencePos);
+
+	free(occurrencePos);
+	free(invertText);
+	ns_Free(s);
+}
+
+static void KMP_FindSupectPattern(NStack s, note * suspect, int T, int * occurrencePos) {
+	int suspectNote = 0, stackSize = s->sz;
 	short lastDistance = -1; 
 
 	while (s->sz != 0) {
 		note poppedItem = ns_Pop(s);
-		if (poppedItem == -1) break;
 
-		if (nt_areSimilars(poppedItem, suspect[j], &lastDistance)) {
-			j++;
-			if (j == T) {
-				int indexOfOccurrence = (stackSize - s->sz) - j;
+		if (nt_areSimilars(poppedItem, suspect[suspectNote], &lastDistance)) {
+			suspectNote++;
+			if (suspectNote == T) {
+				int indexOfOccurrence = (stackSize - s->sz) - suspectNote;
 				printf("S %d\n", indexOfOccurrence);
 				break;
 			}
 			continue;
 		} else {
 			lastDistance = -1;
-			while (j != 0) {
-				int currentPosition = j - 1;
-				j = occurrencePos[currentPosition];
+			while (suspectNote != 0) {
+				int currentPosition = suspectNote - 1;
+				suspectNote = occurrencePos[currentPosition];
 
-				if (nt_areSimilars(poppedItem, suspect[j], &lastDistance)) {
-					j++;
+				if (nt_areSimilars(poppedItem, suspect[suspectNote], &lastDistance)) {
+					suspectNote++;
 					break;
 				}
 			}
@@ -62,12 +70,9 @@ void KMP(note * original, int M, note * suspect, int T) {
 
 		if (s->sz == 0) {
 			printf("N\n");
+			return;
 		}
 	}
-
-	free(occurrencePos);
-	free(invertText);
-	ns_Free(s);
 }
 
 static note * KMP_SortDescending (note * originalText, int size) {
@@ -85,7 +90,7 @@ static note * KMP_SortDescending (note * originalText, int size) {
 }
 
 static int * KMP_Preprocessing (note * suspect, int T) {
-	int * occurrencies = (int*) malloc(sizeof(int) * T);
+	int * occurrencies = (int *) malloc(sizeof(int) * T);
 
 	for (int i = 0; i < T; i++) {
 		occurrencies[i] = 0;
