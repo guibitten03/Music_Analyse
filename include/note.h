@@ -6,14 +6,6 @@
 
 	typedef uint8_t note;
 
-	extern const note C;
-	extern const note D;
-	extern const note E;
-	extern const note F;
-	extern const note G;
-	extern const note A;
-	extern const note B;
-
 	note nt_New(const char * strNote, int sz);
 
 	note nt_Sharp(note n);
