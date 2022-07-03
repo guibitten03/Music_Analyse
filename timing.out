@@ -1,2 +1,9 @@
 functioName|M|T|M*T|userTime
-main|0|0|0|0.022939
+bruteForce|16|4|64|0.000017
+bruteForce|12|2|24|0.000004
+bruteForce|12|2|24|0.000003
+bruteForce|4|3|12|0.000003
+bruteForce|4|3|12|0.000002
+bruteForce|11|4|44|0.000003
+bruteForce|8|3|24|0.000003
+main|0|0|0|0.000113

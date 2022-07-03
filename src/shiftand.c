@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#define SIZE_DISTANCE_MASKS 9
+#define SIZE_DISTANCE_MASKS 7
 
 typedef u_int64_t mask_64;
 
@@ -61,8 +61,14 @@ static void SA_DefineBitSequencesTo0(mask * maskList) {
     }
 }
 
+static void SA_DefineBitMask(mask * mask_List, note * suspect, int T) {
+    for (int i = 0; i < szAlphabet; i++) {
+        SA_DefineMasksForEachNote(mask_List[i], suspect, T);
+    }
+}
+
 static void SA_DefineMasksForEachNote(mask noteT, note * suspect, int T) {
-    int vectorOfDistances[9] = {0,1,2,4,8,11,10,8,4};
+    int vectorOfDistances[SIZE_DISTANCE_MASKS] = {0,1,2,4,8,10,11};
 
     for (int i = 0; i < T; i++) {
         int suspectNote = suspect[i];
@@ -76,16 +82,10 @@ static void SA_DefineMasksForEachNote(mask noteT, note * suspect, int T) {
     }
 }
 
-static void SA_DefineBitMask(mask * mask_List, note * suspect, int T) {
-    for (int i = 0; i < szAlphabet; i++) {
-        SA_DefineMasksForEachNote(mask_List[i], suspect, T);
-    }
-}
-
 static void SA_FindSuspectPattern(mask * maskList, note * original, int M, int T) {
 
     for (int distance = 0; distance < SIZE_DISTANCE_MASKS; distance++) {
-        int result = 0;
+        mask_64 result = 0;
         for (int tNote = 0; tNote < M; tNote++) {
             note suspectNote = original[tNote];
 
