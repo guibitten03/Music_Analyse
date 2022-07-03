@@ -139,7 +139,7 @@ static int distLooping(note a, note b) {
 	note MLN = min(a, b);
 
 	int dist = (int)(szAlphabet - (nt_Hash(MRN) + 1) + (nt_Hash(MLN) + 1));
-	//printf("distLooping: %d\n", dist);
+
 	return dist;
 }
 
@@ -148,7 +148,7 @@ static int distStatic(note a, note b) {
 	note MLN = min(a, b);
 
 	int dist = (int)(MRN - MLN);
-	//printf("distStatic: %d\n", dist);
+
 	return dist;
 }
 

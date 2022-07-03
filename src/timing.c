@@ -9,12 +9,10 @@ void t_Finalize(timing * t) {
 }
 
 void t_PrintHeader() {
-	fprintf(timingstdout, "functioName|M|T|M*T|userTime\n");
+	fprintf(timingstdout, "function|n|m|n*m|userTime\n");
 }
 
-void t_Print(timing * t, const char * functionName, int M, int T) {
+void t_Print(timing * t, const char * function, int n, int m) {
 	float userTime = (t->rend.ru_utime.tv_sec - t->rstart.ru_utime.tv_sec) + 1e-6 * (t->rend.ru_utime.tv_usec - t->rstart.ru_utime.tv_usec);
-	fprintf(timingstdout, "%s|%d|%d|%d|%0.6f\n", functionName, M, T, M * T, userTime);
+	fprintf(timingstdout, "%s|%d|%d|%d|%0.6f\n", function, n, m, n * m, userTime);
 }
-
-

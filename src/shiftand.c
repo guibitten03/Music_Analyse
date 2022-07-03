@@ -5,9 +5,11 @@
 #include <stdint.h>
 #include <math.h>
 
+extern FILE * outputFile;
+
 #define SIZE_DISTANCE_MASKS 9
 
-typedef u_int64_t mask_64;
+typedef uint64_t mask_64;
 
 typedef struct mask_t mask;
 typedef struct mask * Mask;
@@ -93,12 +95,12 @@ static void SA_FindSuspectPattern(mask * maskList, note * original, int M, int T
             result = result & maskList[suspectNote].bitSequences[distance];
 
             if (((result & (01)) != 0)) {
-                printf("S %d\n", (tNote - T + 1));
+                fprintf(outputFile, "S %d\n", (tNote - T + 1));
                 return;
             }   
         }
     }
-    printf("N\n");
+    fprintf(outputFile, "N\n");
 }
 
 static void SA_FreeBitMasks(mask * maskList) {
