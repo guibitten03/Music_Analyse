@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+extern FILE * outputFile;
+
 typedef struct note_stack_node_t {
 	struct note_stack_node_t * previous;
 	note n;
@@ -25,6 +27,10 @@ static int * KMP_Preprocessing (note * suspect, int T);
 static note * KMP_SortDescending (note * original_Text, int size);
 
 void KMP(note * original, int M, note * suspect, int T) {
+	#ifdef TIMING
+		timing t;
+		t_Start(&t);
+	#endif
 	NStack s = ns_New();
 
 	note * invertText = KMP_SortDescending(original, M);
@@ -38,6 +44,10 @@ void KMP(note * original, int M, note * suspect, int T) {
 	free(occurrencePos);
 	free(invertText);
 	ns_Free(s);
+	#ifdef TIMING
+            t_Finalize(&t);
+            t_Print(&t, __func__, n, m);
+	#endif
 }
 
 static void KMP_FindSupectPattern(NStack s, note * suspect, int T, int * occurrencePos) {
@@ -51,7 +61,7 @@ static void KMP_FindSupectPattern(NStack s, note * suspect, int T, int * occurre
 			suspectNote++;
 			if (suspectNote == T) {
 				int indexOfOccurrence = (stackSize - s->sz) - suspectNote;
-				printf("S %d\n", indexOfOccurrence);
+				fprintf(outputFile, "S %d\n", indexOfOccurrence);
 				break;
 			}
 			continue;
@@ -69,7 +79,7 @@ static void KMP_FindSupectPattern(NStack s, note * suspect, int T, int * occurre
 		}
 
 		if (s->sz == 0) {
-			printf("N\n");
+			fprintf(outputFile, "N\n");
 			return;
 		}
 	}
@@ -133,7 +143,6 @@ NStack ns_New(void) {
 
 note ns_Pop(NStack s) {
 	if (s->sz == 0) {
-		fputs("ERROR: Trying to pop a note from an empty stack.\n", stderr);
 		return -1;
 	}
 

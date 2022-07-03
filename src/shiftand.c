@@ -6,8 +6,9 @@
 #include <math.h>
 
 #define SIZE_DISTANCE_MASKS 7
+extern FILE * outputFile;
 
-typedef u_int64_t mask_64;
+typedef uint64_t mask_64;
 
 typedef struct mask_t mask;
 typedef struct mask * Mask;
@@ -27,6 +28,10 @@ static void SA_FreeBitMasks(mask * maskList);
 
 
 void shiftand(note * original, int M, note * suspect, int T) {
+    #ifdef TIMING
+	    timing t;
+	    t_Start(&t);
+    #endif
     note * originalAlfabet = SA_GetAlfebet();
 
     mask * maskList = (mask *) malloc(sizeof(mask) * szAlphabet);
@@ -40,6 +45,10 @@ void shiftand(note * original, int M, note * suspect, int T) {
     SA_FreeBitMasks(maskList);
     free(maskList);
     free(originalAlfabet);
+    #ifdef TIMING
+            t_Finalize(&t);
+            t_Print(&t, __func__, n, m);
+    #endif
 } 
 
 static note * SA_GetAlfebet() {
@@ -93,12 +102,12 @@ static void SA_FindSuspectPattern(mask * maskList, note * original, int M, int T
             result = result & maskList[suspectNote].bitSequences[distance];
 
             if (((result & (01)) != 0)) {
-                printf("S %d\n", (tNote - T + 1));
+                fprintf(outputFile, "S %d\n", (tNote - T + 1));
                 return;
             }   
         }
     }
-    printf("N\n");
+    fprintf(outputFile, "N\n");
 }
 
 static void SA_FreeBitMasks(mask * maskList) {

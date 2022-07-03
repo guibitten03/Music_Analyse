@@ -1,45 +1,62 @@
 #include "bmh.h"
 
-#include <stdlib.h>
 #include <stdio.h>
 
-static void BMH_preprocessing(int * pos, note * P, int m);
+#ifdef TIMING
+#include "timing.h"
+#endif
 
-void BMH(note * original, int M, note * suspect, int T) {
-    int pos[szAlphabet];
+extern FILE * outputFile;
 
-    BMH_preprocessing(pos, suspect, T);
+static void BMH_preprocessing(int * table, note * S, int m);
 
-    for (int i = T - 1; i < M; i++) {
+void BMH(note * O, int n, note * S, int m) {
+#ifdef TIMING
+	timing t;
+	t_Start(&t);
+#endif
+    int table[szAlphabet];
+
+    BMH_preprocessing(table, S, m);
+
+    int i = m - 1;
+    while (i < n) {
         int k = i;
-        int j = T - 1;
+        int j = m - 1;
         short lastDistance = -1;
 
-        while (nt_areSimilars(original[k], suspect[j], &lastDistance)) {
+        while (nt_areSimilars(O[k], S[j], &lastDistance)) {
             if (j == 0) {
-                printf("S %d\n", k);
+#ifdef TIMING
+            t_Finalize(&t);
+            t_Print(&t, __func__, n, m);
+#endif
+                fprintf(outputFile, "S %d\n", k);
                 return;
             }
 
             k--; j--;
         }
 
-        i = i + pos[nt_Hash(original[k])];
-        i--;
+        i = i + table[nt_Hash(O[k])];
     }
-    printf("N\n");
+#ifdef TIMING
+	t_Finalize(&t);
+	t_Print(&t, __func__, n, m);
+#endif
+    fprintf(outputFile, "N\n");
 }
 
-static void BMH_preprocessing(int * preprocessingTable, note * P, int m) {
+static void BMH_preprocessing(int * table, note * S, int m) {
     for (int i = 0; i < szAlphabet; i++) {
-        preprocessingTable[i] = m - 1;
+        table[i] = m - 1;
     }
 
     for (int i = 0; i < m - 1; i++) {
 		for (int j = 0; j < szAlphabet; j++) {
-			short dist = -1;
-			if (nt_areSimilars(P[i], j, &dist)) {
-				preprocessingTable[j] = m - i - 1;
+			short _ = -1;
+			if (nt_areSimilars(S[i], j, &_)) {
+				table[j] = m - i - 1;
 			}
 		}
     }

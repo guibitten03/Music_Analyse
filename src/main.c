@@ -26,22 +26,11 @@ int fileGetLineSize(FILE * f);
 
 void parseNotes(char * noteSequence, note * notes);
 
-void callMethod(long method, note * original, int M, note * suspect, int T);
+void callMethod(long method, note * O, int n, note * S, int m);
+
+FILE * outputFile = NULL;
 
 int main(int argc, char ** argv) {
-	if (0) {
-		if (argc < 3) {
-			fprintf(stderr, "Usage: %s <note> <note>\n", argv[0]);
-			return -1;
-		}
-		note a = nt_New(argv[1], strlen(argv[1]));
-		note b = nt_New(argv[2], strlen(argv[2]));
-		short dist = -1;
-		if (nt_areSimilars(a, b, &dist)) {
-			printf("Similars by %d.\n", dist);
-		}
-		return 1;
-	}
 	args arguments;
 	argsParse(&arguments, argc, argv);
 
@@ -51,11 +40,18 @@ int main(int argc, char ** argv) {
 		return EXIT_FAILURE;
 	}
 
+	outputFile = fopen("tp3.out", "w");
+	if (NULL == outputFile) {
+		fprintf(stderr, "Could not open output file.\n");
+		fclose(inputFile);
+		return EXIT_FAILURE;
+	}
+
 #ifdef TIMING
 	const char * timingstdoutFileName = "timing.out";
 
 	timingstdout = fopen("timing.out", "w");
-	if (NULL == inputFile) {
+	if (NULL == timingstdout) {
 		fprintf(stderr, "Could not create timing file: %s\n", timingstdoutFileName);
 		fprintf(stderr, "Using stdout.\n");
 		timingstdout = stdout;
@@ -69,19 +65,19 @@ int main(int argc, char ** argv) {
 
 	short bHasInput = 1;
 	do {
-		int M, T;
-		fscanf(inputFile, "%d %d\n", &M, &T);
+		int n, m;
+		fscanf(inputFile, "%d %d\n", &n, &m);
 
-		bHasInput = (M != 0) && (T != 0);	
+		bHasInput = (n != 0) && (m != 0);	
 
 		if (bHasInput) {
-			note original[M];
-			fileGetNotes(inputFile, original);
+			note O[n];
+			fileGetNotes(inputFile, O);
 
-			note suspect[T];
-			fileGetNotes(inputFile, suspect);
+			note S[m];
+			fileGetNotes(inputFile, S);
 
-			callMethod(arguments.method, original, M, suspect, T);
+			callMethod(arguments.method, O, n, S, m);
 		}
 	} while (bHasInput);
 
@@ -92,6 +88,7 @@ int main(int argc, char ** argv) {
 #endif
 
 	fclose(inputFile);
+	fclose(outputFile);
 
 	return EXIT_SUCCESS;
 }
@@ -148,22 +145,22 @@ void parseNotes(char * noteSequence, note * notes) {
 	} while ((noteStr = strtok(NULL, " \n")) != NULL);
 }
 
-void callMethod(long method, note * original, int M, note * suspect, int T) {
+void callMethod(long method, note * O, int n, note * S, int m) {
 	switch (method) {
 		case 1:
-			bruteForce(original, M, suspect, T);
+			naiveStringMatching(O, n, S, m);
 		break;
 
 		case 2:
-			KMP(original, M, suspect, T);
+			KMP(O, n, S, m);
 		break;	
 
 		case 3:
-			BMH(original, M, suspect, T);
+			BMH(O, n, S, m);
 		break;	
 
 		case 4:
-			shiftand(original, M, suspect, T);
+			shiftand(O, n, S, m);
 		break;
 
 		default:
