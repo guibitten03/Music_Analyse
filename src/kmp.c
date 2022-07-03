@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef TIMING
+#include "timing.h"
+#endif
+
 extern FILE * outputFile;
 
 typedef struct note_stack_node_t {
@@ -26,20 +30,20 @@ static void KMP_TextToStack(NStack s, note * text, int M);
 static int * KMP_Preprocessing (note * suspect, int T);
 static note * KMP_SortDescending (note * original_Text, int size);
 
-void KMP(note * original, int M, note * suspect, int T) {
+void KMP(note * original, int n, note * suspect, int m) {
 	#ifdef TIMING
 		timing t;
 		t_Start(&t);
 	#endif
 	NStack s = ns_New();
 
-	note * invertText = KMP_SortDescending(original, M);
+	note * invertText = KMP_SortDescending(original, n);
 
-	KMP_TextToStack(s, invertText, M);
+	KMP_TextToStack(s, invertText, n);
 
-	int * occurrencePos = KMP_Preprocessing(suspect, T);
+	int * occurrencePos = KMP_Preprocessing(suspect, m);
 
-	KMP_FindSupectPattern(s, suspect, T, occurrencePos);
+	KMP_FindSupectPattern(s, suspect, m, occurrencePos);
 
 	free(occurrencePos);
 	free(invertText);

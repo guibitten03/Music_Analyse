@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include <math.h>
 
+#ifdef TIMING
+#include "timing.h"
+#endif
+
 #define SIZE_DISTANCE_MASKS 7
 extern FILE * outputFile;
 
@@ -27,7 +31,7 @@ static void SA_FindSuspectPattern(mask * mask_List, note * original, int M, int 
 static void SA_FreeBitMasks(mask * maskList);
 
 
-void shiftand(note * original, int M, note * suspect, int T) {
+void shiftand(note * original, int n, note * suspect, int m) {
     #ifdef TIMING
 	    timing t;
 	    t_Start(&t);
@@ -38,9 +42,9 @@ void shiftand(note * original, int M, note * suspect, int T) {
 
     SA_DefineBitSequencesTo0(maskList);
 
-    SA_DefineBitMask(maskList, suspect, T);
+    SA_DefineBitMask(maskList, suspect, m);
 
-    SA_FindSuspectPattern(maskList, original, M, T);
+    SA_FindSuspectPattern(maskList, original, n, m);
 
     SA_FreeBitMasks(maskList);
     free(maskList);
