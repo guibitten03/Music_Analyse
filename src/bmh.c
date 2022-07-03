@@ -28,8 +28,8 @@ void BMH(note * O, int n, note * S, int m) {
         while (nt_areSimilars(O[k], S[j], &lastDistance)) {
             if (j == 0) {
 #ifdef TIMING
-            t_Finalize(&t);
-            t_Print(&t, __func__, n, m);
+                t_Finalize(&t);
+                t_Print(&t, __func__, n, m);
 #endif
                 fprintf(outputFile, "S %d\n", k);
                 return;
