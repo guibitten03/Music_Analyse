@@ -53,6 +53,10 @@ static void BMH_preprocessing(int * table, note * S, int m) {
     }
 
     for (int i = 0; i < m - 1; i++) {
+        /*
+        * The amount of symbols to be ignored cant be too big that
+        * would ignore any similar of that note.
+        */
 		for (int j = 0; j < szAlphabet; j++) {
 			short _ = -1;
 			if (nt_areSimilars(S[i], j, &_)) {
